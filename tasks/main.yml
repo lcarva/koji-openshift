@@ -1,0 +1,59 @@
+---
+- name: Create BuildConfig objects
+  k8s:
+    host: "{{ kc_ocp_host }}"
+    api_key: "{{ kc_ocp_api_key }}"
+    verify_ssl: "{{ kc_ocp_verify_ssl }}"
+    state: present
+    definition:
+      apiVersion: build.openshift.io/v1
+      kind: BuildConfig
+      metadata:
+        name: "{{ item }}"
+        namespace: "{{ kc_ocp_namespace }}"
+      spec:
+        runPolicy: Serial
+        source:
+          git:
+            ref: "{{ kc_ocp_src_ref }}"
+            uri: "{{ kc_ocp_src_uri }}"
+          type: Git
+          contextDir: "images/{{ item }}"
+        output:
+          to:
+            kind: ImageStreamTag
+            name: "{{ item }}:latest"
+        strategy:
+          dockerStrategy:
+            noCache: true
+            forcePull: true
+            dockerfilePath: Dockerfile.rhel7
+            buildArgs:
+            - name: YUM_REPO_URL
+              value: "{{ kc_yum_repo_url }}"
+        triggers:
+        - type: ConfigChange
+  with_items:
+  - koji-hub
+  - koji-builder
+  - koji-db
+
+- name: Create ImageStream objects
+  k8s:
+    host: "{{ kc_ocp_host }}"
+    api_key: "{{ kc_ocp_api_key }}"
+    verify_ssl: "{{ kc_ocp_verify_ssl }}"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ImageStream
+      metadata:
+        name: "{{ item }}"
+        namespace: "{{ kc_ocp_namespace }}"
+      spec:
+        tags:
+        - name: latest
+  with_items:
+  - koji-hub
+  - koji-builder
+  - koji-db

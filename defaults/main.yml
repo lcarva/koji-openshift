@@ -1,0 +1,7 @@
+---
+kc_ocp_namespace: koji
+
+kc_ocp_src_ref: master
+kc_ocp_src_uri: https://github.com/lcarva/koji-openshift.git
+
+kc_yum_repo_url: null

@@ -1,0 +1,17 @@
+FROM registry.access.redhat.com/rhel7
+
+ARG YUM_REPO_URL
+ADD ${YUM_REPO_URL} /etc/yum.repos.d/custom.repo
+
+RUN yum install -y \
+        mock \
+        koji-builder \
+        koji-containerbuild-builder \
+        osbs-client \
+        python-osbs-client \
+        python-hashlib \
+        python-pip \
+        findutils \
+    && yum clean all
+
+CMD ["/usr/sbin/init"]

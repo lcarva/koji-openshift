@@ -1,0 +1,9 @@
+FROM postgres:9.4
+
+# Location for init scripts executed only during DB
+# initialization. Scripts will be executed in
+# alphabetical order
+ADD https://pagure.io/koji/raw/koji-1.16-updates/f/docs/schema.sql \
+    /docker-entrypoint-initdb.d/00-schema.sql
+
+RUN chmod o+r /docker-entrypoint-initdb.d/00-schema.sql

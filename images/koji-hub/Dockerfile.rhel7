@@ -1,0 +1,22 @@
+FROM registry.access.redhat.com/rhel7
+
+EXPOSE 80 443
+
+ARG YUM_REPO_URL
+ADD ${YUM_REPO_URL} /etc/yum.repos.d/custom.repo
+
+RUN yum install -y \
+        hostname \
+        httpd \
+        koji-containerbuild-hub \
+        koji-hub \
+        koji-hub-plugins \
+        koji-utils \
+        koji-web \
+        mod_auth_kerb \
+        mod_ssl \
+        mod_wsgi \
+        python-requests \
+    && yum clean all
+
+CMD ["httpd", "-D", "FOREGROUND"]
